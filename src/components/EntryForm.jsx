@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react'
-import { STATUSES } from '../hooks/useStore'
+import { STATUSES, genId } from '../hooks/useStore'
 import { Btn, RatingInput } from './UI'
 
-export default function EntryForm({ initial, mediaTypes, ratingConfig, onSave, onCancel }) {
+export default function EntryForm({ initial, mediaTypes, ratingConfig, onSave, onCancel, onAddType, onUpdateRating }) {
   const [form, setForm] = useState(() => {
     const base = {
       title: '',
@@ -21,7 +21,35 @@ export default function EntryForm({ initial, mediaTypes, ratingConfig, onSave, o
   })
   const fileRef = useRef()
 
+  // Inline "add custom type" panel
+  const [showAddType, setShowAddType] = useState(false)
+  const [newTypeName, setNewTypeName] = useState('')
+  const [newTypeIcon, setNewTypeIcon] = useState('📦')
+  const TYPE_ICONS = ['📦','🎵','🎭','🎪','🏆','🎯','🎲','🌟','🔮','🎨','📻','🎤','🚀','🌈','🦋','🐉','🍿','☕','🧩','🔭']
+
+  // Inline "adjust scale" panel
+  const [showScale, setShowScale] = useState(false)
+  const [scaleDraft, setScaleDraft] = useState({ ...ratingConfig })
+
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleAddType = () => {
+    if (!newTypeName.trim() || !onAddType) return
+    const id = genId()
+    onAddType({ id, name: newTypeName.trim(), icon: newTypeIcon, color: '#a78bfa', custom: true })
+    set('mediaTypeId', id)
+    setNewTypeName('')
+    setNewTypeIcon('📦')
+    setShowAddType(false)
+  }
+
+  const handleSaveScale = () => {
+    if (!onUpdateRating) return
+    if (parseFloat(scaleDraft.max) <= parseFloat(scaleDraft.min)) { alert('Maximum must be greater than minimum.'); return }
+    const next = { ...scaleDraft, min: parseFloat(scaleDraft.min), max: parseFloat(scaleDraft.max), precision: parseInt(scaleDraft.precision) }
+    onUpdateRating(next)
+    setShowScale(false)
+  }
 
   const handleImage = (e) => {
     const file = e.target.files[0]
@@ -94,10 +122,30 @@ export default function EntryForm({ initial, mediaTypes, ratingConfig, onSave, o
               onKeyDown={e => e.key === 'Enter' && submit()} />
           </div>
           <div>
-            <label style={labelStyle}>Media Type</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label style={labelStyle}>Media Type</label>
+              {onAddType && (
+                <button type="button" onClick={() => setShowAddType(s => !s)}
+                  style={{ background: 'none', border: 'none', color: 'var(--accent3)', cursor: 'pointer', fontSize: 11, fontWeight: 600, padding: 0 }}>
+                  {showAddType ? '× cancel' : '+ new type'}
+                </button>
+              )}
+            </div>
             <select value={form.mediaTypeId} onChange={e => set('mediaTypeId', e.target.value)}>
               {mediaTypes.map(m => <option key={m.id} value={m.id}>{m.icon} {m.name}</option>)}
             </select>
+            {showAddType && (
+              <div style={{ marginTop: 8, padding: 12, background: 'var(--bg3)', borderRadius: 8, border: '1px solid var(--border)', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <select value={newTypeIcon} onChange={e => setNewTypeIcon(e.target.value)} style={{ width: 64, fontSize: 18 }}>
+                  {TYPE_ICONS.map(i => <option key={i} value={i}>{i}</option>)}
+                </select>
+                <input value={newTypeName} onChange={e => setNewTypeName(e.target.value)}
+                  placeholder="Category name (e.g. Board Games)"
+                  onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddType())}
+                  style={{ flex: 1, minWidth: 140 }} />
+                <Btn size="sm" variant="accent" onClick={handleAddType} disabled={!newTypeName.trim()}>Add</Btn>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -123,7 +171,42 @@ export default function EntryForm({ initial, mediaTypes, ratingConfig, onSave, o
 
       {/* Rating */}
       <div>
-        <label style={labelStyle}>Rating</label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label style={labelStyle}>Rating</label>
+          {onUpdateRating && (
+            <button type="button" onClick={() => { setScaleDraft({ ...ratingConfig }); setShowScale(s => !s) }}
+              style={{ background: 'none', border: 'none', color: 'var(--accent3)', cursor: 'pointer', fontSize: 11, fontWeight: 600, padding: 0 }}>
+              {showScale ? '× cancel' : '⚙ adjust scale'}
+            </button>
+          )}
+        </div>
+        {showScale && (
+          <div style={{ marginTop: 8, marginBottom: 12, padding: 14, background: 'var(--bg3)', borderRadius: 8, border: '1px solid var(--border)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+              <div>
+                <label style={{ ...labelStyle, fontSize: 10 }}>Min</label>
+                <input type="number" value={scaleDraft.min} onChange={e => setScaleDraft(c => ({ ...c, min: e.target.value }))} />
+              </div>
+              <div>
+                <label style={{ ...labelStyle, fontSize: 10 }}>Max</label>
+                <input type="number" value={scaleDraft.max} onChange={e => setScaleDraft(c => ({ ...c, max: e.target.value }))} />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ ...labelStyle, fontSize: 10 }}>Decimal precision</label>
+                <select value={scaleDraft.precision} onChange={e => setScaleDraft(c => ({ ...c, precision: parseInt(e.target.value) }))}>
+                  <option value={0}>Whole numbers (e.g. 7)</option>
+                  <option value={1}>1 decimal (e.g. 7.5)</option>
+                  <option value={2}>2 decimals (e.g. 7.75)</option>
+                  <option value={3}>3 decimals (e.g. 7.333)</option>
+                </select>
+              </div>
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 10 }}>
+              This updates your global rating scale for all entries.
+            </div>
+            <Btn size="sm" variant="accent" onClick={handleSaveScale}>Apply scale</Btn>
+          </div>
+        )}
         <div style={{ marginTop: 8 }}>
           <RatingInput value={form.rating} onChange={v => set('rating', v)} cfg={ratingConfig} />
         </div>

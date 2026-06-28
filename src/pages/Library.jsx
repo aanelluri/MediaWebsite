@@ -7,7 +7,7 @@ import EntryCard from '../components/EntryCard'
 import EntryForm from '../components/EntryForm'
 import EntryDetail from '../components/EntryDetail'
 
-export default function Library({ entries, mediaTypes, ratingConfig, addEntry, updateEntry, deleteEntry }) {
+export default function Library({ entries, mediaTypes, ratingConfig, addEntry, updateEntry, deleteEntry, setMediaTypes, setRatingConfig }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [filterType, setFilterType] = useState(searchParams.get('type') || 'all')
@@ -181,13 +181,17 @@ export default function Library({ entries, mediaTypes, ratingConfig, addEntry, u
       {/* Modals */}
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add New Entry" width={600}>
         <EntryForm mediaTypes={mediaTypes} ratingConfig={ratingConfig}
-          onSave={handleSaveAdd} onCancel={() => setAddOpen(false)} />
+          onSave={handleSaveAdd} onCancel={() => setAddOpen(false)}
+          onAddType={(t) => setMediaTypes(prev => [...prev, t])}
+          onUpdateRating={setRatingConfig} />
       </Modal>
 
       <Modal open={!!editEntry} onClose={() => setEditEntry(null)} title="Edit Entry" width={600}>
         {editEntry && (
           <EntryForm initial={editEntry} mediaTypes={mediaTypes} ratingConfig={ratingConfig}
-            onSave={handleSaveEdit} onCancel={() => setEditEntry(null)} />
+            onSave={handleSaveEdit} onCancel={() => setEditEntry(null)}
+            onAddType={(t) => setMediaTypes(prev => [...prev, t])}
+            onUpdateRating={setRatingConfig} />
         )}
       </Modal>
 

@@ -53,6 +53,8 @@ export default function App() {
                 addEntry={addEntry}
                 updateEntry={updateEntry}
                 deleteEntry={deleteEntry}
+                setMediaTypes={setMediaTypes}
+                setRatingConfig={setRatingConfig}
               />
             } />
             <Route path="/stats" element={

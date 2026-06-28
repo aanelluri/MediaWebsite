@@ -59,19 +59,19 @@ export function Modal({ open, onClose, title, children, width = 560 }) {
     <div className="anim-fadeIn" onClick={onClose}
       style={{
         position: 'fixed', inset: 0, background: 'rgba(0,0,0,.72)',
-        zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 20, backdropFilter: 'blur(4px)',
+        zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '40px 20px', backdropFilter: 'blur(4px)', overflowY: 'auto',
       }}>
       <div className="anim-fadeUp" onClick={e => e.stopPropagation()}
         style={{
           background: 'var(--bg2)', border: '1px solid var(--border2)',
           borderRadius: 16, width: '100%', maxWidth: width,
-          maxHeight: '90vh', overflow: 'auto', boxShadow: 'var(--sh2)',
+          margin: 'auto', boxShadow: 'var(--sh2)',
         }}>
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '18px 24px 16px', borderBottom: '1px solid var(--border)',
-          position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 1,
+          position: 'sticky', top: 0, background: 'var(--bg2)', zIndex: 1, borderRadius: '16px 16px 0 0',
         }}>
           <h2 style={{ fontFamily: 'var(--ff-display)', fontSize: 20, fontWeight: 700 }}>{title}</h2>
           <button onClick={onClose}
