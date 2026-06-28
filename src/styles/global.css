@@ -1,0 +1,89 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #090812;
+  --bg2:       #0f0d1a;
+  --bg3:       #161325;
+  --surface:   #1c1830;
+  --surface2:  #252040;
+  --border:    #2a2545;
+  --border2:   #38325a;
+  --accent:    #a78bfa;
+  --accent2:   #7c3aed;
+  --accent3:   #c4b5fd;
+  --accentDim: rgba(124,58,237,.18);
+  --gold:      #fbbf24;
+  --rose:      #f43f5e;
+  --teal:      #2dd4bf;
+  --green:     #10b981;
+  --blue:      #3b82f6;
+  --text:      #ede9fc;
+  --text2:     #9d93bf;
+  --text3:     #524d6e;
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body:    'DM Sans', system-ui, sans-serif;
+  --ff-mono:    'DM Mono', 'Courier New', monospace;
+  --r:  12px;
+  --r2:  8px;
+  --r3:  6px;
+  --sh:  0 4px 24px rgba(0,0,0,.5);
+  --sh2: 0 12px 56px rgba(0,0,0,.7);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ── Animations ── */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes slideLeft{ from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+@keyframes pulse    { 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+@keyframes spin     { to { transform: rotate(360deg); } }
+@keyframes glow     { 0%,100%{ box-shadow:0 0 20px rgba(167,139,250,.3); } 50%{ box-shadow:0 0 40px rgba(167,139,250,.6); } }
+
+.anim-fadeUp  { animation: fadeUp  .4s cubic-bezier(.16,1,.3,1) both; }
+.anim-fadeIn  { animation: fadeIn  .3s ease both; }
+.anim-slideLeft { animation: slideLeft .35s cubic-bezier(.16,1,.3,1) both; }
+
+/* ── Form elements ── */
+input, textarea, select {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  border-radius: var(--r2);
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  width: 100%;
+}
+input::placeholder, textarea::placeholder { color: var(--text3); }
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(124,58,237,.15);
+}
+select option { background: var(--bg2); color: var(--text); }
+textarea { resize: vertical; line-height: 1.6; }
+
+/* ── Links ── */
+a { color: var(--accent3); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Utility ── */
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
